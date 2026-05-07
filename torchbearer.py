@@ -25,16 +25,16 @@ import heapq
 # =============================================================================
 
 def explain_problem():
-    """
-    Returns
-    -------
-    str
-        Your Part 1 README answers, written as a string.
-        Must match what you wrote in README Part 1.
 
-    TODO
-    """
-    return "TODO"
+    explanation = """
+A single-shortest path from S is not enough, as it only gives one piece of the entire path we need.
+Just because this one piece is optimal does not mean the remaining path will also be optimal (this is not greedy).
+After all inter-location costs are known, each path from S to T (that also visits each relic chamber) must be checked for the most
+optimal one (the one that minimizes the total torch fuel cost). In order to avoid having to check every single path, only the paths
+that lower the total torch fuel cost should be explored.
+"""
+    
+    return explanation
 
 
 # =============================================================================
@@ -42,60 +42,42 @@ def explain_problem():
 # =============================================================================
 
 def select_sources(spawn, relics, exit_node):
-    """
-    Parameters
-    ----------
-    spawn : node
-    relics : list[node]
-    exit_node : node
 
-    Returns
-    -------
-    list[node]
-        No duplicates. Order does not matter.
+    sources = relics + [spawn] # |M| + 1
 
-    TODO
-    """
-    pass
+    return sources
 
 
 def run_dijkstra(graph, source):
-    """
-    Parameters
-    ----------
-    graph : dict[node, list[tuple[node, int]]]
-        graph[u] = [(v, cost), ...]. All costs are nonnegative integers.
-    source : node
+    distances = {} # set up table
 
-    Returns
-    -------
-    dict[node, float]
-        Minimum cost from source to every node in graph.
-        Unreachable nodes map to float('inf').
+    for key in graph.keys():
+        distances[key] = float('inf') # every node has INF distance
+    distances[source] = 0 # change source node to 0 distance
 
-    TODO
-    """
-    pass
+    minheap = [(0, source)] # must push edges into minheap by cost first
+
+    while(len(minheap) > 0):
+        min_node = heapq.heappop(minheap) # get minimum node from minheap
+
+        if(min_node[0] > distances[min_node[1]]): # skip if the current path to node is worse
+            continue
+
+        distances[min_node[1]] = min_node[0] # save the current path
+
+        for (neighbor, cost) in graph[min_node[1]]: # for each neighbor of min_node in graph
+            heapq.heappush(minheap, (min_node[0] + cost, neighbor)) # push neighbor's path
+
+    return distances
 
 
 def precompute_distances(graph, spawn, relics, exit_node):
-    """
-    Parameters
-    ----------
-    graph : dict[node, list[tuple[node, int]]]
-    spawn : node
-    relics : list[node]
-    exit_node : node
+    source_nodes = {}
 
-    Returns
-    -------
-    dict[node, dict[node, float]]
-        Nested structure supporting dist_table[u][v] lookups
-        for every source u your design requires.
+    for source in select_sources(spawn, relics, exit_node):
+        source_nodes[source] = run_dijkstra(graph, source) # run dijkstra's |M| + 1 times
 
-    TODO
-    """
-    pass
+    return source_nodes
 
 
 # =============================================================================

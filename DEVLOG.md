@@ -10,31 +10,35 @@
 
 ---
 
-## Entry 1 – [Date]: Initial Plan
+## Entry 1 – [5/6/26]: Initial Plan
 
-> Required. Write this before writing any code. Describe your plan: what you will
-> implement first, what parts you expect to be difficult, and how you plan to test.
+I plan to first implement Djikstra's algorithm to determine the individual
+shortest paths from each important node (minus T) to each other node in the dungeon. 
+This will allow me to form a shortest-path table between nodes. 
+Using this table, I can then prune the unoptimal paths using a branch and bound search pattern.
+Once this is done, I should be left with the most optimal path.
+I expect the branch and bound portion to be the most difficult.
+I plan to test using the given example with a few self-made examples
+to test edge cases and other situations.
+
+---
+
+## Entry 2 – [5/6/26]: [Parts 1 & 2 Completed]
+
+I initially pushed edges into the minheap in the order (node, cost) at first. 
+I found that the incorrect edges were being popped.
+I found out that it was ordering the minheap by the node letter, not the cost.
+By reversing the order, I was able to properly write my implementation for Part 2.
+
+---
+
+## Entry 3 – [???]: [Short description]
 
 _Your entry here._
 
 ---
 
-## Entry 2 – [Date]: [Short description]
-
-> Required. At least one entry must describe a bug, wrong assumption, or design change
-> you encountered. Describe what went wrong and how you resolved it.
-
-_Your entry here._
-
----
-
-## Entry 3 – [Date]: [Short description]
-
-_Your entry here._
-
----
-
-## Entry 4 – [Date]: Post-Implementation Reflection
+## Entry 4 – [???]: Post-Implementation Reflection
 
 > Required. Written after your implementation is complete. Describe what you would
 > change or improve given more time.
@@ -43,7 +47,7 @@ _Your entry here._
 
 ---
 
-## Final Entry – [Date]: Time Estimate
+## Final Entry – [???]: Time Estimate
 
 > Required. Estimate minutes spent per part. Honesty is expected; accuracy is not graded.
 

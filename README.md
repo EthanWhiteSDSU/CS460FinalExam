@@ -13,17 +13,17 @@
 
 ## Part 1: Problem Analysis
 
-> Document why this problem is not just a shortest-path problem. Three bullet points, one
-> per question. Each bullet should be 1-2 sentences max.
-
 - **Why a single shortest-path run from S is not enough:**
-  _Your answer here._
+A single-shortest path from S is not enough, as it only gives one piece of the entire path we need.
+Just because this one piece is optimal does not mean the remaining path will also be optimal (this is not greedy).
 
 - **What decision remains after all inter-location costs are known:**
-  _Your answer here._
+ After all inter-location costs are known, each path from S to T (that also visits each relic chamber) must be checked for the most
+ optimal one (the one that minimizes the total torch fuel cost).
 
 - **Why this requires a search over orders (one sentence):**
-  _Your answer here._
+  In order to avoid having to check every single path, only the paths
+  that lower the total torch fuel cost should be explored.
 
 ---
 
@@ -31,33 +31,30 @@
 
 ### Part 2a: Source Selection
 
-> List the source node types as a bullet list. For each, one-line reason.
-
 | Source Node Type | Why it is a source |
 |---|---|
-| _node type_ | _one-line reason_ |
-| _node type_ | _one-line reason_ |
+| S | The entrance, all paths must start from here |
+| R_i | Any given relic chamber R in set M, we want to know the shortest
+path from each relic chamber to the next or to T |
+
 
 ### Part 2b: Distance Storage
 
-> Fill in the table. No prose required.
-
 | Property | Your answer |
 |---|---|
-| Data structure name | |
-| What the keys represent | |
-| What the values represent | |
-| Lookup time complexity | |
-| Why O(1) lookup is possible | |
+| Data structure name | Dictionary (Hash Table) |
+| What the keys represent | dict[source_node], the key is just the source node |
+| What the values represent | dict[end_node], each source node's value is a second dictionary of the minimum distances to each other node. The key is the end node and the value is the minimal distance |
+| Lookup time complexity | O(1) |
+| Why O(1) lookup is possible | Since dictionaries use hashing, an O(1) lookup is expected |
 
 ### Part 2c: Precomputation Complexity
 
-> State the total complexity and show the arithmetic. Two to three lines max.
-
-- **Number of Dijkstra runs:** _your answer_
-- **Cost per run:** _your answer_
-- **Total complexity:** _your answer_
-- **Justification (one line):** _your answer_
+- **Number of Dijkstra runs:** |M| + 1
+- **Cost per run:** O((V + E)log V), where E is the number of edges and V is the number of vertices.
+- **Total complexity:** (|M| + 1) * O((V + E)log V) = O(|M|(V + E)log V)
+- **Justification (one line):** In order to fill out an entire shortest-path table, we need to run Dijkstra's with S and each R in M
+as the source node.
 
 ---
 
