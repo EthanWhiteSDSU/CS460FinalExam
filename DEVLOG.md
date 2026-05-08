@@ -32,13 +32,23 @@ By reversing the order, I was able to properly write my implementation for Part 
 
 ---
 
-## Entry 3 – [???]: [Short description]
+## Entry 3 – [5/7/26]: [Parts 3 & 4 Completed, improved Dijkstra's]
+
+I realized that I forgot to include a finalized/unfinalized check for my implementation of Dijkstra's
+I went back to my Part 2 code and added a final list
+Every time a node is popped from the minheap, it is added to the final list
+Then, each time its neighbors are checked to be pushed into the minheap, the code filters out nodes already in final
+
+---
+
+## Entry 4 – [???]: [Short description]
 
 _Your entry here._
 
 ---
 
-## Entry 4 – [???]: Post-Implementation Reflection
+
+## Entry 5 – [???]: Post-Implementation Reflection
 
 > Required. Written after your implementation is complete. Describe what you would
 > change or improve given more time.
