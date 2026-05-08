@@ -33,6 +33,19 @@ After all inter-location costs are known, each path from S to T (that also visit
 optimal one (the one that minimizes the total torch fuel cost). In order to avoid having to check every single path, only the paths
 that lower the total torch fuel cost should be explored.
 """
+    explanation = """
+- **Why a single shortest-path run from S is not enough:**
+  A single-shortest path from S is not enough, as it only gives one piece of the entire path we need.
+  Just because this one piece is optimal does not mean the remaining path will also be optimal (this is not greedy).
+
+- **What decision remains after all inter-location costs are known:**
+  After all inter-location costs are known, each path from S to T (that also visits each relic chamber) must be checked for the most
+  optimal one (the one that minimizes the total torch fuel cost).
+
+- **Why this requires a search over orders (one sentence):**
+  In order to avoid having to check every single path, only the paths
+  that lower the total torch fuel cost should be explored.
+"""
     
     return explanation
 
@@ -50,23 +63,26 @@ def select_sources(spawn, relics, exit_node):
 
 def run_dijkstra(graph, source):
     distances = {} # set up table
+    final = [] # list of finalized nodes
 
     for key in graph.keys():
         distances[key] = float('inf') # every node has INF distance
     distances[source] = 0 # change source node to 0 distance
 
-    minheap = [(0, source)] # must push edges into minheap by cost first
+    minheap = [(0, source)] # must push nodes into minheap by cost first
 
     while(len(minheap) > 0):
-        min_node = heapq.heappop(minheap) # get minimum node from minheap
+        min_node = heapq.heappop(minheap) # get current node path from minheap
 
         if(min_node[0] > distances[min_node[1]]): # skip if the current path to node is worse
             continue
 
-        distances[min_node[1]] = min_node[0] # save the current path
+        distances[min_node[1]] = min_node[0] # save the current path for node
+        final.append(min_node[1]) # finalize node path when popped from minheap
 
         for (neighbor, cost) in graph[min_node[1]]: # for each neighbor of min_node in graph
-            heapq.heappush(minheap, (min_node[0] + cost, neighbor)) # push neighbor's path
+            if neighbor not in final: # only add unfinalized node paths to minheap
+                heapq.heappush(minheap, (min_node[0] + cost, neighbor)) # push neighbor's path
 
     return distances
 
@@ -85,16 +101,32 @@ def precompute_distances(graph, spawn, relics, exit_node):
 # =============================================================================
 
 def dijkstra_invariant_check():
-    """
-    Returns
-    -------
-    str
-        Your Part 3 README answers, written as a string.
-        Must match what you wrote in README Part 3.
 
-    TODO
-    """
-    return "TODO"
+    check = """
+- **For nodes already finalized (in S):**
+dist[v] must represent the shortest path from vertex x to v since vertex v will never be revisited.
+
+- **For nodes not yet finalized (not in S):**
+dist[u] must represent the shortest path so far from vertex x to u where each vertex between
+x and u is in S.
+In other words, each vertex between x and u have already been finalized, thus dist[u] could
+be the true shortest path (unless a shorter path is found with the same conditions).
+
+- **Initialization : why the invariant holds before iteration 1:**
+Before iteration 1, S is an empty set, dist[v] for the source node is 0, and dist[v] for all other nodes is inf.
+The invariant holds since the distance from the source node to itself must be 0 and no other nodes have been finalized, so the distances must remain undetermined at inf.
+
+- **Maintenance : why finalizing the min-dist node is always correct:**
+Since all edge weights must be nonnegative, there will never be a future dist[u] for node u that is smaller than dist[v].
+Thus, finalizing each min-dist node is guaranteed to be correct.
+
+- **Termination : what the invariant guarantees when the algorithm ends:**
+When the algorithm terminates, S is filled with every node, dist[v] for the source node is 0, and dist[v] for all other nodes is some nonnegative value.
+The invariant guarantees that each dist[v] is the minimal distance from the source node to node v.
+
+Knowing the true shortest path costs from any given vertex to another helps the route planner guarantee that the resulting route that it determines is also minimal. 
+"""
+    return check
 
 
 # =============================================================================
@@ -102,16 +134,32 @@ def dijkstra_invariant_check():
 # =============================================================================
 
 def explain_search():
-    """
-    Returns
-    -------
-    str
-        Your Part 4 README answers, written as a string.
-        Must match what you wrote in README Part 4.
 
-    TODO
-    """
-    return "TODO"
+    explain = """
+- **The failure mode:** Assume that greedy always moves to the next unvisited node with the smallest torch cost. 
+- **Counter-example setup:** 
+Assume the following dungeon layout:
+      →---1---A---1---↓
+S ---|      3↓ ↑1     T
+      →---2---B---1---↑
+- **What greedy picks:** 
+Greedy would choose to go to node A first (A is unvisited and 1 < 2).
+Then it would have to go to B, which costs 3. 
+Then it would finish at T which costs 1. 
+The total cost would be 5.
+- **What optimal picks:** 
+Optimal would chose to go to B first, which costs 2. 
+Then it would have to go up to A, which costs 1. 
+Then it would finish at T which costs 1. 
+The total cost would be 4.
+- **Why greedy loses:** 
+Greedy fails to consider the possibility that choosing the current lightest weight could force the route to take a much heavier cost later on. 
+In other words, always choosing the local minimum does not guarantee that the global result will also be minimum.
+Therefore, the greedy strategy fails for the route construction phase of the engine.
+
+The algorithm must explore every possible order that the relic chambers can be visited in and determine the order that results in the smallest total torch cost. 
+"""
+    return explain
 
 
 # =============================================================================
