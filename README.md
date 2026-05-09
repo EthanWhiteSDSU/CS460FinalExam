@@ -4,11 +4,6 @@
 **Student ID:** 130278197
 **Course:** CS 460 – Algorithms | Spring 2026
 
-> This README is your project documentation. Write it the way a developer would document
-> their design decisions , bullet points, brief justifications, and concrete examples where
-> required. You are not writing an essay. You are explaining what you built and why you built
-> it that way. Delete all blockquotes like this one before submitting.
-
 ---
 
 ## Part 1: Problem Analysis
@@ -126,33 +121,26 @@ The algorithm must explore every possible order that the relic chambers can be v
 
 ### Part 5a: State Representation
 
-> Document the three components of your search state as a table.
-> Variable names here must match exactly what you use in torchbearer.py.
-
 | Component | Variable name in code | Data type | Description |
 |---|---|---|---|
-| Current location | | | |
-| Relics already collected | | | |
-| Fuel cost so far | | | |
+| Current location | current_loc | Node | Denotes the current room (node) that the Torchbearer is in |
+| Relics already collected | relics_visited_order | List | Denotes the relics that the Torchbearer has currently collected |
+| Fuel cost so far | cost_so_far | Int | Denotes the current amount of fuel that the Torchbearer has used |
 
 ### Part 5b: Data Structure for Visited Relics
 
-> Fill in the table.
-
 | Property | Your answer |
 |---|---|
-| Data structure chosen | |
-| Operation: check if relic already collected | Time complexity: |
-| Operation: mark a relic as collected | Time complexity: |
-| Operation: unmark a relic (backtrack) | Time complexity: |
-| Why this structure fits | |
+| Data structure chosen | List |
+| Operation: check if relic already collected | Time complexity: O(M) |
+| Operation: mark a relic as collected | Time complexity: O(1) |
+| Operation: unmark a relic (backtrack) | Time complexity: O(M) |
+| Why this structure fits | Marking is done in constant time due to appending, but checking and unmarking have to be done in linear time. Using a dictionary would make them also constant, but since M is small here, a List is easier to write and should work fine |
 
 ### Part 5c: Worst-Case Search Space
 
-> Two bullets.
-
-- **Worst-case number of orders considered:** _Your answer (in terms of k)._
-- **Why:** _One-line justification._
+- **Worst-case number of orders considered:** k!
+- **Why:** There are a total of k! different order permutations that can be searched.
 
 ---
 
@@ -160,30 +148,24 @@ The algorithm must explore every possible order that the relic chambers can be v
 
 ### Part 6a: Best-So-Far Tracking
 
-> Three bullets.
-
-- **What is tracked:** _Your answer here._
-- **When it is used:** _Your answer here._
-- **What it allows the algorithm to skip:** _Your answer here._
+- **What is tracked:** total torch cost of the overall best path found so far
+- **When it is used:** check if the cost of travelling along the current path will exceed the best so far
+- **What it allows the algorithm to skip:** path orders that are guaranteed to be less optimal than the overall best path so far
 
 ### Part 6b: Lower Bound Estimation
 
-> Three bullets.
-
-- **What information is available at the current state:** _Your answer here._
-- **What the lower bound accounts for:** _Your answer here._
-- **Why it never overestimates:** _Your answer here._
+- **What information is available at the current state:** current path cost, relics collected so far, relics to be collected, and cost to travel to the next neighboring (and unvisited) room
+- **What the lower bound accounts for:** the current path cost plus the lowest possible remaining total cost of travelling through the rest of the potential paths from the next room to T
+- **Why it never overestimates:** Since the cost of moving to the next room is already minimal (thanks to Dijkstra's), it serves as a proper lower bound for the remaining potential paths from that next room to T (since the next room MUST be visited in order to travel along any of those potential paths from it)
 
 ### Part 6c: Pruning Correctness
 
-> One to two bullets. Explain why pruning is safe.
+- Since moving to the next room is guaranteed to have the minimal cost, if that cost plus the current path's cost is ever equal to or greater than the best so far cost, all the remaining paths from that next room are not worth checking and should be pruned
+- This is also guaranteed by there being no nonnegative costs in the dungeon, thus no future path can ever reduce the current path cost plus the next room cost
 
-- _Your answer here._
 
 ---
 
 ## References
 
-> Bullet list. If none beyond lecture notes, write that.
-
-- _Your references here._
+Lecture Notes

@@ -27,13 +27,6 @@ import heapq
 def explain_problem():
 
     explanation = """
-A single-shortest path from S is not enough, as it only gives one piece of the entire path we need.
-Just because this one piece is optimal does not mean the remaining path will also be optimal (this is not greedy).
-After all inter-location costs are known, each path from S to T (that also visits each relic chamber) must be checked for the most
-optimal one (the one that minimizes the total torch fuel cost). In order to avoid having to check every single path, only the paths
-that lower the total torch fuel cost should be explored.
-"""
-    explanation = """
 - **Why a single shortest-path run from S is not enough:**
   A single-shortest path from S is not enough, as it only gives one piece of the entire path we need.
   Just because this one piece is optimal does not mean the remaining path will also be optimal (this is not greedy).
@@ -62,6 +55,7 @@ def select_sources(spawn, relics, exit_node):
 
 
 def run_dijkstra(graph, source):
+
     distances = {} # set up table
     final = [] # list of finalized nodes
 
@@ -72,6 +66,7 @@ def run_dijkstra(graph, source):
     minheap = [(0, source)] # must push nodes into minheap by cost first
 
     while(len(minheap) > 0):
+        
         min_node = heapq.heappop(minheap) # get current node path from minheap
 
         if(min_node[0] > distances[min_node[1]]): # skip if the current path to node is worse
@@ -88,6 +83,7 @@ def run_dijkstra(graph, source):
 
 
 def precompute_distances(graph, spawn, relics, exit_node):
+
     source_nodes = {}
 
     for source in select_sources(spawn, relics, exit_node):
@@ -167,82 +163,82 @@ The algorithm must explore every possible order that the relic chambers can be v
 # =============================================================================
 
 def find_optimal_route(dist_table, spawn, relics, exit_node):
-    """
-    Parameters
-    ----------
-    dist_table : dict[node, dict[node, float]]
-        Output of precompute_distances.
-    spawn : node
-    relics : list[node]
-        Every node in this list must be visited at least once.
-    exit_node : node
-        The route must end here.
 
-    Returns
-    -------
-    tuple[float, list[node]]
-        (minimum_fuel_cost, ordered_relic_list)
-        Returns (float('inf'), []) if no valid route exists.
+    best = [] # create list for best path
+    best.append(float('inf')) # initialize total path cost as inf
 
-    TODO
     """
-    pass
+    NOTE: For reasons explained in Entry 4 of DEVLOG.md, the first index 
+    of best is reserved to hold the total path cost for the best path so far.
+    Everything after the first element is the actual best path so far.
+    """
+
+    _explore(dist_table, spawn, relics, [], 0, exit_node, best)
+
+    # if the total path cost was never updated, that means no valid path exists
+    if(best[0] == float('inf')):
+        return (float('inf'), [])
+    else:
+        return (best[0], best[1:])
+    
+
 
 
 def _explore(dist_table, current_loc, relics_remaining, relics_visited_order,
              cost_so_far, exit_node, best):
-    """
-    Recursive helper for find_optimal_route.
+    
+    if(len(relics_remaining) == 0): # base case: all relics have been obtained
 
-    Parameters
-    ----------
-    dist_table : dict[node, dict[node, float]]
-    current_loc : node
-    relics_remaining : collection
-        Your chosen data structure from README Part 5b.
-    relics_visited_order : list[node]
-    cost_so_far : float
-    exit_node : node
-    best : list
-        Mutable container for the best solution found so far.
+        # calculate the total path cost by adding the cost from the last relic chamber to T
+        total_cost = cost_so_far + dist_table[current_loc][exit_node] 
+        
+        # if total path cost is better than the best so far, make it the new best so far
+        if(total_cost < best[0]):
+            best[0] = total_cost
+            best[1:] = relics_visited_order
 
-    Returns
-    -------
-    None
-        Updates best in place.
+        return
+    
+    # for each unvisited neighbor of the current room
+    for neighbor in dist_table[current_loc]:
 
-    TODO
-    Implement: base case, pruning, recursive case, backtracking.
+        if neighbor in relics_remaining:
 
-    REQUIRED: Add a 1-2 sentence comment near your pruning condition
-    explaining why it is safe (cannot skip the optimal solution).
-    This comment is graded.
-    """
-    pass
+            # calculate the lower bound estimate of each potential future path
+            lower_bound = cost_so_far + dist_table[current_loc][neighbor]
 
+            # if lower bound estimate is less than the best so far, visit the neighbor
+            """
+            NOTE: This pruning condition is safe because every potential path cost
+            from the neighbor to T is guaranteed to be at least the cost from the
+            current room to the neighbor. Since the Dijkstra's runs minimized each 
+            of the costs and since all of the costs are nonnegative, no future path
+            can reduce the total path cost from the neighbor, and thus the optimal 
+            solution can never be pruned.
+            """
+            if(lower_bound < best[0]):
+
+                # make and edit copies of both lists for backtracking
+                visited_copy = relics_visited_order.copy() 
+                remaining_copy = relics_remaining.copy()
+
+                visited_copy.append(neighbor)
+                remaining_copy.remove(neighbor)
+                
+                _explore(dist_table, neighbor, 
+                         remaining_copy, 
+                         visited_copy, 
+                         lower_bound, exit_node, best)
 
 # =============================================================================
 # PIPELINE
 # =============================================================================
 
 def solve(graph, spawn, relics, exit_node):
-    """
-    Parameters
-    ----------
-    graph : dict[node, list[tuple[node, int]]]
-    spawn : node
-    relics : list[node]
-    exit_node : node
 
-    Returns
-    -------
-    tuple[float, list[node]]
-        (minimum_fuel_cost, ordered_relic_list)
-        Returns (float('inf'), []) if no valid route exists.
+    dist_table = precompute_distances(graph, spawn, relics, exit_node)
 
-    TODO
-    """
-    pass
+    return find_optimal_route(dist_table, spawn, relics, exit_node)
 
 
 # =============================================================================

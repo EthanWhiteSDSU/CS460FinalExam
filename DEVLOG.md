@@ -3,11 +3,6 @@
 **Student Name:** Ethan White
 **Student ID:** 130278197
 
-> Instructions: Write at least four dated entries. Required entry types are marked below.
-> Two to five sentences per entry is sufficient. Write entries as you go, not all in one
-> sitting. Graders check that entries reflect genuine work across multiple sessions.
-> Delete all blockquotes before submitting.
-
 ---
 
 ## Entry 1 – [5/6/26]: Initial Plan
@@ -41,34 +36,52 @@ Then, each time its neighbors are checked to be pushed into the minheap, the cod
 
 ---
 
-## Entry 4 – [???]: [Short description]
+## Entry 4 – [5/8/26]: [Parts 5 & 6 Completed]
 
-_Your entry here._
+In order to track the total cost of the best path so far, I initially went with the following helper function:
+
+def cost_of_best(best, dist_table, exit_node):
+
+    if(len(best) == 0):
+        return float('inf')
+
+    cost = 0
+    first_node = 'S'
+
+    for node in best:
+        cost += dist_table[first_node][node]
+        first_node = node
+    cost += dist_table[first_node][exit_node]
+
+    return cost
+
+However, I realized that this approach made my code too messy and would be repeated a lot.
+I needed a way to store the total cost of the best path so far without changing the function
+parameters.
+After experimenting with different options, I eventually decided to reserve the first index of the best list for the cost alone, then I could just use the rest of the list as normal.
 
 ---
 
 
-## Entry 5 – [???]: Post-Implementation Reflection
+## Entry 5 – [5/8/26]: Post-Implementation Reflection
 
-> Required. Written after your implementation is complete. Describe what you would
-> change or improve given more time.
-
-_Your entry here._
+If given more time, I would try to find a better way to manage the relics_visited and relics_remaining lists. 
+Although my implementation for them works, it might be a better idea
+to try using dictionaries (hash tables) instead in order to make every operation constant.
+This would make my implementation more optimized for larger graph inputs.
 
 ---
 
-## Final Entry – [???]: Time Estimate
-
-> Required. Estimate minutes spent per part. Honesty is expected; accuracy is not graded.
+## Final Entry – [5/8/26]: Time Estimate
 
 | Part | Estimated Hours |
 |---|---|
-| Part 1: Problem Analysis | |
-| Part 2: Precomputation Design | |
-| Part 3: Algorithm Correctness | |
-| Part 4: Search Design | |
-| Part 5: State and Search Space | |
-| Part 6: Pruning | |
-| Part 7: Implementation | |
-| README and DEVLOG writing | |
-| **Total** | |
+| Part 1: Problem Analysis | 0.5 hours |
+| Part 2: Precomputation Design | 1 hour |
+| Part 3: Algorithm Correctness | 0.5 hours |
+| Part 4: Search Design | 1.5 hours |
+| Part 5: State and Search Space | 1.5 hours |
+| Part 6: Pruning | 1.5 hours |
+| Part 7: Implementation | 0.2 hours |
+| README and DEVLOG writing | 1 hour |
+| **Total** | 7.7 hours |
